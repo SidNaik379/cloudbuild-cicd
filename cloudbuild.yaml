@@ -1,0 +1,43 @@
+steps:
+# Step 1: Debugging step to print the COMMIT_SHA
+- name: 'gcr.io/cloud-builders/git'
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |
+      echo "Commit SHA: $COMMIT_SHA"
+
+# Step 2: Build the Docker image
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'gcr.io/gcp-mlops-451922/demo-flask-app', '.']
+
+# Step 3: Push the Docker image
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'gcr.io/gcp-mlops-451922/demo-flask-app']
+
+# Step 4: Run tests
+- name: 'gcr.io/gcp-mlops-451922/demo-flask-app'
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |
+      python -m pytest
+
+# Step 5: Deploy the app
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  entrypoint: gcloud
+  args:
+    - 'run'
+    - 'deploy'
+    - 'py-bq-load'
+    - '--image'
+    - 'gcr.io/gcp-mlops-451922/demo-flask-app'
+    - '--region'
+    - 'us-central1'
+    - '--allow-unauthenticated'
+
+images:
+- 'gcr.io/gcp-mlops-451922/demo-flask-app'
+
+options:
+  logging: CLOUD_LOGGING_ONLY

@@ -1,0 +1,10 @@
+google-cloud-bigquery==2.34.4
+Flask==1.1.2
+gunicorn==20.1.0
+jinja2==2.11.3
+markupsafe==2.0.1
+pandas
+pyarrow
+pytest
+itsdangerous==1.1.0
+Werkzeug>=1.0.1  # Ensure compatibility with Flask 2.1.0
